@@ -10,6 +10,8 @@ export class TrazeMqttService{
         }
         this.isConnected = false;
         instance = this;
+        this.subscribers = {};
+        this.messages = [];
         return instance;
     }
 
@@ -24,14 +26,34 @@ export class TrazeMqttService{
         }       
         this.client = connect(url, {clientId: this.clientId});
         this.client.on('connect', () => {
-            console.log("Connected.");
             this.isConnected = true;
+            Object.keys(this.subscribers).forEach(topic => {
+                this.client.subscribe(topic);
+            })
             onSucess();
         });
         this.client.on('error', (error) => {
             console.log("Error: " + error);
             onError();
         });
+        this.client.on('message', (topic, message) => {
+            message = JSON.parse(message);
+            if(this.subscribers[topic]){
+                this.subscribers[topic](message)
+            } else {
+                this.messages.push({
+                    topic: topic,
+                    payload: message
+                });
+            }
+        });
+    }
+
+    subscribeTo(topic, callback){
+       this.subscribers[topic] = callback;
+       this.messages
+       .filter(message => message.topic == topic)
+       .forEach(message => callback(message.payload));
     }
 
     generateClientId(){

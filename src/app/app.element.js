@@ -1,4 +1,9 @@
 import {PolymerElement, html} from '@polymer/polymer';
+import '@polymer/app-layout/app-header/app-header.js';
+import '@polymer/iron-pages/iron-pages.js'
+
+import './elements/login.element.js';
+
 import {TrazeMqttService} from './services/traze-mqtt.service'
 
 const SERVER_URL = "wss://traze.iteratec.de:9443";
@@ -6,14 +11,29 @@ const SERVER_URL = "wss://traze.iteratec.de:9443";
 export default class TrazePolymerApp extends PolymerElement {
 
     static get template(){
-        return html `<h1>hello [[computeStatus(mqttStatus)]]</h1>`;
+        return html `
+        <style>
+            app-header {
+                padding: 1em;
+                background-color: #44cef3;
+            }
+            iron-pages {
+                padding: 1em;
+            }
+        </style>
+        <app-header reveals>
+            <div main-title>TRAZE [[computeStatus(mqttStatus)]]</div>
+        </app-header>
+        <iron-pages selected="0">
+            <traze-login></traze-login>
+        </iron-pages>
+        `;
     }
 
     static get properties(){
         return {
             mqttStatus: {
-                type: Boolean,
-                value: false
+                type: Boolean
             }
         }
     }
@@ -25,13 +45,16 @@ export default class TrazePolymerApp extends PolymerElement {
     constructor() {
         super();
         this.mqttService = new TrazeMqttService();
+        this.mqttStatus = this.mqttService.isConnected;
     } 
 
     ready() {
-        super.ready();      
-        this.mqttService.connectToServer(SERVER_URL,() => {
-            this.mqttStatus = true;
-        });
+        super.ready();
+        if(!this.mqttStatus){
+            this.mqttService.connectToServer(SERVER_URL,() => {
+                this.mqttStatus = true;
+            });
+        }             
     }
 }
 window.customElements.define('traze-polymer-app',TrazePolymerApp);

@@ -19,6 +19,9 @@
     "webpack-dev-server": "^3.1.7"
   },
   "dependencies": {
+    "@polymer/app-layout": "^3.0.0-pre.25",
+    "@polymer/iron-pages": "^3.0.0-pre.25",
+    "@polymer/paper-card": "^3.0.0-pre.25",
     "@polymer/polymer": "^3.0.5",
     "@webcomponents/webcomponentsjs": "^2.1.1",
     "mqtt": "^2.18.8"
