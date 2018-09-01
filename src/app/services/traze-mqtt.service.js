@@ -51,6 +51,11 @@ export class TrazeMqttService{
 
     subscribeTo(topic, callback){
        this.subscribers[topic] = callback;
+       
+       if(this.client && this.isConnected){
+            this.client.subscribe(topic);
+        }    
+       
        this.messages
        .filter(message => message.topic == topic)
        .forEach(message => callback(message.payload));
