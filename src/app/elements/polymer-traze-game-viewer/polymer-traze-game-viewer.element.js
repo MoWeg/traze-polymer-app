@@ -19,10 +19,12 @@ class TrazeGameViewerElement extends PolymerElement {
                 type: Array,
             },
             gridWidth: {
-                type: Number
+                type: Number,
+                value: 0
             },
             gridHeight: {
-                type: Number
+                type: Number,
+                value: 0
             }
         }
     }
@@ -34,8 +36,9 @@ class TrazeGameViewerElement extends PolymerElement {
                     display: grid;
                     min-height: 40em;
                 }
-                polymer-traze-game-row {
+                polymer-traze-game-tile {
                     display: block;
+                    margin: 1px;
                 }
             </style>
             <div class="container" style="grid-template-columns: repeat({{gridWidth}},1fr); grid-template-rows: repeat({{gridHeight}}, 1fr)">
@@ -73,20 +76,39 @@ class TrazeGameViewerElement extends PolymerElement {
 
     spectateGame(instanceId){
         this.mqttService.subscribeToMqtt('traze/'+instanceId+'/grid', (message) => {
-            this.tiles = this.convertToTiles(message.tiles);
-            this.gridWidth = message.width;
-            this.gridHeight = message.height;
+            if(message.height != this.gridHeight || message.width != this.gridWidth){
+                console.log("creating grid");
+                
+                this.tiles = this.createPolymerTrazeTiles(message.tiles);
+                this.gridWidth = message.width;
+                this.gridHeight = message.height;
+
+                this.tiles[this.transformCoordinates([0, 0])].color = "green";  
+                this.tiles[this.transformCoordinates([this.gridWidth-1,this.gridHeight-1])].color = "red";
+                this.tiles[this.transformCoordinates([0,this.gridHeight-1])].color = "blue";
+                this.tiles[this.transformCoordinates([this.gridWidth -1, 0])].color = "yellow";
+            }
         });
     }
 
-    convertToTiles(messageTiles){
+    createPolymerTrazeTiles(messageTiles){
         let tiles = [];
         messageTiles.forEach((row, rowIndex) => {
             row.forEach((tile, tileIndex) => {
-                tiles.push({id: rowIndex+''+tileIndex});
+                tiles.push({
+                    color: "#455A64"
+                });
             });
         });
         return tiles;
+    }
+
+    transformCoordinates(coordinate){
+        let x = coordinate[0];
+        let y = coordinate[1];
+        let newY = this.gridWidth - (y+1);
+        let newX = newY * (this.gridHeight - 1) + x;
+        return newY + newX;
     }
 }
 

@@ -18,15 +18,13 @@ class PolymerTrazeGameTileElement extends PolymerElement {
     static get template() {
         return html`
             <style>
-                .tile-outer {
+                .tile{
                     width: 100%;
                     height: 100%;
-                    border: 0.5px solid black; 
+                    display: block;
                 }
             </style>
-            <div class="tile-outer">
-                <div class="tile-inner"></div>
-            </div>
+            <div class="tile" style="background-color:{{tile.color}};"></div>
         `;
     }
 
