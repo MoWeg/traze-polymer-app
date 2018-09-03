@@ -3,7 +3,8 @@ import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/iron-pages/iron-pages.js'
 
 import './elements/traze-instance-select.element.js';
-import './elements/traze-join.element.js'
+import './elements/traze-join.element.js';
+import './elements/polymer-traze-game-viewer/polymer-traze-game-viewer.element.js'
 
 import {TrazeMqttService} from './services/traze-mqtt.service'
 
@@ -21,14 +22,15 @@ export default class TrazePolymerApp extends PolymerElement {
             iron-pages {
                 padding: 1em;
             }
+            polymer-traze-game-viewer {
+                display: block;
+            }
         </style>
-        <app-header reveals>
-            <div main-title>TRAZE [[computeStatus(mqttStatus)]]</div>
-        </app-header>
         <traze-instance-select></traze-instance-select>
-        <iron-pages selected="0">
-            <traze-join></traze-join>
-        </iron-pages>
+        <polymer-traze-game-viewer></polymer-traze-game-viewer>
+        
+        <traze-join></traze-join>
+        
         `;
     }
 
