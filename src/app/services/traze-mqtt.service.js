@@ -49,7 +49,7 @@ export class TrazeMqttService{
         });
     }
 
-    subscribeTo(topic, callback){
+    subscribeToMqtt(topic, callback){
        this.subscribers[topic] = callback;
        
        if(this.client && this.isConnected){
@@ -59,6 +59,22 @@ export class TrazeMqttService{
        this.messages
        .filter(message => message.topic == topic)
        .forEach(message => callback(message.payload));
+    }
+
+    subscribeToInternal(topic, callback){
+        this.subscribers[topic] = callback;
+    }
+
+    unsubscribeFromMqtt(topic){
+        delete this.subscribers[topic];
+        this.client.unsubscribe(topic);
+    }
+
+    selectInstance(trazeInstanceId){
+        this.activeInstance = trazeInstanceId;
+        if(this.subscribers['instanceSelect']){
+            this.subscribers['instanceSelect'](this.activeInstance);
+        }
     }
 
     generateClientId(){

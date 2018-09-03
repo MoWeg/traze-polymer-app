@@ -7,14 +7,15 @@ import '@polymer/paper-button/paper-button.js';
 
 import { TrazeMqttService } from '../services/traze-mqtt.service';
 
-class  TrazeLoginElement extends PolymerElement {
+class  TrazeInstanceSelectElement extends PolymerElement {
     static get properties() {
         return {
+            showSelect:  {
+                type: Boolean,
+                value: false
+            },
             instances : {
                 type: Array
-            },
-            userName : {
-                type: String
             },
             selectedInstance: {}
         }
@@ -22,28 +23,17 @@ class  TrazeLoginElement extends PolymerElement {
 
     static get template() {
         return html`
-        <style>
-            paper-card {
-                background-color: #455A64;
-            }
-        </style>
-        <paper-card heading="Login">
-            <div class="card-content"> 
+        <template is="dom-if" if="[[showSelect]]">
+            <div>
                 <div>Pick an instance</div>
                 <paper-radio-group selected="{{selectedInstance}}">
                     <template is="dom-repeat" items="{{instances}}">
-                        <paper-radio-button name="[[item.name]]">Instance: [[item.name]] (Players: [[item.activePlayers]])</paper-radio-button>
+                     <paper-radio-button name="[[item.name]]">Instance: [[item.name]] (Players: [[item.activePlayers]])</paper-radio-button>
                     </template>
                 </paper-radio-group>
-                <div>Set your name</div>
-                <paper-input value={{userName::input}}><paper-input>
+                <paper-button on-click="selectInstance">JOIN</paper-button>
             </div>
-            <div class="card-actions">
-                <div class="horizontal justified">
-                    <paper-button on-click="joinInstance">JOIN</paper-button>
-                </div>
-            </div>
-        </paper-card>
+        </template>
         `;
     }
 
@@ -55,7 +45,7 @@ class  TrazeLoginElement extends PolymerElement {
     constructor() {
         super();
         this.mqttService = new TrazeMqttService();
-        this.instances = [];
+        this.instances = null;
     }
 
     /**
@@ -64,15 +54,21 @@ class  TrazeLoginElement extends PolymerElement {
      */
     ready() {
         super.ready();
-        this.mqttService.subscribeTo('traze/games', (message) => {
+        this.mqttService.subscribeToMqtt('traze/games', (message) => {
             this.instances = message;
+            if(message.length == 1){
+                this.selectedInstance = message[0];
+                this.selectInstance();
+            } else {
+                this.showSelect = true;
+            }
         });
     }
 
-    joinInstance(){
-        console.log(this.selectedInstance);
-        console.log(this.userName);
+    selectInstance(){
+       this.mqttService.selectInstance(this.selectedInstance.name);
+       this.mqttService.unsubscribeFromMqtt('traze/games');
     }
 }
 
-customElements.define('traze-login',TrazeLoginElement );
+customElements.define('traze-instance-select',TrazeInstanceSelectElement );
