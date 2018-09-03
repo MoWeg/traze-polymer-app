@@ -77,12 +77,11 @@ class TrazeGameViewerElement extends PolymerElement {
     spectateGame(instanceId){
         this.mqttService.subscribeToMqtt('traze/'+instanceId+'/grid', (message) => {
             if(message.height != this.gridHeight || message.width != this.gridWidth){
-                console.log("creating grid");
-                
                 this.tiles = this.createPolymerTrazeTiles(message.tiles);
                 this.gridWidth = message.width;
                 this.gridHeight = message.height;
 
+                // to be removed
                 this.tiles[this.transformCoordinates([0, 0])].color = "green";  
                 this.tiles[this.transformCoordinates([this.gridWidth-1,this.gridHeight-1])].color = "red";
                 this.tiles[this.transformCoordinates([0,this.gridHeight-1])].color = "blue";
@@ -93,8 +92,8 @@ class TrazeGameViewerElement extends PolymerElement {
 
     createPolymerTrazeTiles(messageTiles){
         let tiles = [];
-        messageTiles.forEach((row, rowIndex) => {
-            row.forEach((tile, tileIndex) => {
+        messageTiles.forEach((row) => {
+            row.forEach((tile) => {
                 tiles.push({
                     color: "#455A64"
                 });
@@ -106,8 +105,8 @@ class TrazeGameViewerElement extends PolymerElement {
     transformCoordinates(coordinate){
         let x = coordinate[0];
         let y = coordinate[1];
-        let newY = this.gridWidth - (y+1);
-        let newX = newY * (this.gridHeight - 1) + x;
+        let newY = this.gridHeight - (y+1);
+        let newX = newY * (this.gridWidth - 1) + x;
         return newY + newX;
     }
 }
