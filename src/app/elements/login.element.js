@@ -1,12 +1,22 @@
 import {PolymerElement, html} from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-card/paper-card.js'
+import '@polymer/paper-card/paper-card.js';
+import '@polymer/paper-radio-button/paper-radio-button.js';
+import '@polymer/paper-radio-group/paper-radio-group.js';
+import '@polymer/paper-input/paper-input.js';
+import '@polymer/paper-button/paper-button.js';
 
 import { TrazeMqttService } from '../services/traze-mqtt.service';
 
 class  TrazeLoginElement extends PolymerElement {
     static get properties() {
         return {
-
+            instances : {
+                type: Array
+            },
+            userName : {
+                type: String
+            },
+            selectedInstance: {}
         }
     }
 
@@ -19,7 +29,19 @@ class  TrazeLoginElement extends PolymerElement {
         </style>
         <paper-card heading="Login">
             <div class="card-content"> 
-                <div>Instances</div>
+                <div>Pick an instance</div>
+                <paper-radio-group selected="{{selectedInstance}}">
+                    <template is="dom-repeat" items="{{instances}}">
+                        <paper-radio-button name="[[item.name]]">Instance: [[item.name]] (Players: [[item.activePlayers]])</paper-radio-button>
+                    </template>
+                </paper-radio-group>
+                <div>Set your name</div>
+                <paper-input value={{userName::input}}><paper-input>
+            </div>
+            <div class="card-actions">
+                <div class="horizontal justified">
+                    <paper-button on-click="joinInstance">JOIN</paper-button>
+                </div>
             </div>
         </paper-card>
         `;
@@ -33,6 +55,7 @@ class  TrazeLoginElement extends PolymerElement {
     constructor() {
         super();
         this.mqttService = new TrazeMqttService();
+        this.instances = [];
     }
 
     /**
@@ -42,8 +65,13 @@ class  TrazeLoginElement extends PolymerElement {
     ready() {
         super.ready();
         this.mqttService.subscribeTo('traze/games', (message) => {
-            console.log(message);
+            this.instances = message;
         });
+    }
+
+    joinInstance(){
+        console.log(this.selectedInstance);
+        console.log(this.userName);
     }
 }
 
