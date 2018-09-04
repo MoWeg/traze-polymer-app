@@ -11,6 +11,9 @@ import {PolymerElement, html} from '@polymer/polymer/polymer-element.js';
 class TrazeJoinElement extends PolymerElement {
     static get properties() {
         return {
+            activeInstance:{
+                type: String
+            },
             userName : {
                 type: String,
                 notify: true
@@ -60,8 +63,7 @@ class TrazeJoinElement extends PolymerElement {
     }
 
     joinInstance(){
-        this.set('userName', this.inputValue);
-        this.notifyPath('userName');
+        this.set('userName', this.inputValue); // same as this.userName = this.inputValue
     }
 }
 

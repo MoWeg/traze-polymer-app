@@ -69,8 +69,6 @@ class  TrazeInstanceSelectElement extends PolymerElement {
     }
 
     selectInstance(){
-        this.set('activeInstance', this.activeInstance);
-        this.notifyPath('activeInstance');
         this.mqttService.selectInstance(this.activeInstance);
         this.mqttService.unsubscribeFromMqtt('traze/games');
     }

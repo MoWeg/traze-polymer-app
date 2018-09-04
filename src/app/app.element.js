@@ -31,12 +31,12 @@ export default class TrazePolymerApp extends PolymerElement {
             }
         </style>
         <div class="container">
-            <polymer-traze-game-viewer></polymer-traze-game-viewer>
-            <p> Instance: [[activeInstance]]</p>
-            <p> User: [[userName]]</p>
-            <traze-instance-select active-instance="{{activeInstance}}"></traze-instance-select>
-            <traze-join user-name="{{userName}}"></traze-join>
-            <traze-steering-cross></traze-steering-cross>
+            <polymer-traze-game-viewer active-instance=[[activeInstance]]></polymer-traze-game-viewer>
+            <iron-pages selected="[[needed]]">
+                <traze-instance-select active-instance="{{activeInstance}}"></traze-instance-select>
+                <traze-join active-instance=[[activeInstance]] user-name="{{userName}}"></traze-join>
+                <traze-steering-cross></traze-steering-cross>
+            </iron-pages>
         </div>
         `;
     }
@@ -48,6 +48,9 @@ export default class TrazePolymerApp extends PolymerElement {
             },
             userName: {
                 type: String,
+            },
+            needed: {
+                type: Number,
             }
         }
     }
@@ -63,13 +66,21 @@ export default class TrazePolymerApp extends PolymerElement {
     }
 
     onChanges(inst, usr){
-        console.log("onChanges fired");
-        
+        if(!this.activeInstance){
+            this.needed = 0;
+            return;
+        }
+        if(!this.userName){
+            this.needed = 1;
+            return;
+        }
+        this.needed = 2;
     }
 
     constructor() {
         super();
         this.mqttService = new TrazeMqttService();
+        this.needed = 0;
     } 
 
     ready() {

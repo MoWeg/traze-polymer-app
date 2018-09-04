@@ -15,6 +15,10 @@ import { TrazeMqttService } from '../../services/traze-mqtt.service';
 class TrazeGameViewerElement extends PolymerElement {
     static get properties() {
         return {
+            activeInstance: {
+                type: String,
+                observer: 'onInstanceSelect'
+            },
             tiles:{
                 type: Array,
             },
@@ -70,13 +74,10 @@ class TrazeGameViewerElement extends PolymerElement {
      */
     ready() {
         super.ready();
-        if(!this.mqttService.activeInstance){
-            this.mqttService.subscribeToInternal('instanceSelect', (activeInstance) => {
-                this.spectateGame(activeInstance);
-            });
-        } else {
-            this.spectateGame(this.mqttService.activeInstance);
-        }
+    }
+
+    onInstanceSelect(){
+        this.spectateGame(this.activeInstance);
     }
 
     spectateGame(instanceId){

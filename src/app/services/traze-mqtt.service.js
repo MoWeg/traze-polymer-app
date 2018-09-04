@@ -65,11 +65,6 @@ export class TrazeMqttService{
        .filter(message => message.topic == topic)
        .forEach(message => callback(message.payload));
     }
-
-    subscribeToInternal(topic, callback){
-        this.subscribers[topic] = callback;
-    }
-
     unsubscribeFromMqtt(topic){
         delete this.subscribers[topic];
         this.client.unsubscribe(topic);
@@ -77,9 +72,6 @@ export class TrazeMqttService{
 
     selectInstance(trazeInstanceId){
         this.activeInstance = trazeInstanceId;
-        if(this.subscribers['instanceSelect']){
-            this.subscribers['instanceSelect'](this.activeInstance);
-        }
     }
 
     generateClientId(){
