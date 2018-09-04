@@ -42,8 +42,8 @@ class TrazeGameViewerElement extends PolymerElement {
                 }
             </style>
             <div class="container" style="grid-template-columns: repeat({{gridWidth}},1fr); grid-template-rows: repeat({{gridHeight}}, 1fr)">
-                <template is="dom-repeat" items="{{tiles}}">
-                    <polymer-traze-game-tile tile={{item}}></polymer-traze-game-tile>
+                <template is="dom-repeat" items="[[tiles]]">
+                    <polymer-traze-game-tile tile=[[item]]></polymer-traze-game-tile>
                 </template>
             </div>
         `;
@@ -57,6 +57,7 @@ class TrazeGameViewerElement extends PolymerElement {
     constructor() {
         super();
         this.mqttService = new TrazeMqttService();
+        this.gameMemory = {};
     }
 
     /**
@@ -76,18 +77,65 @@ class TrazeGameViewerElement extends PolymerElement {
 
     spectateGame(instanceId){
         this.mqttService.subscribeToMqtt('traze/'+instanceId+'/grid', (message) => {
-            if(message.height != this.gridHeight || message.width != this.gridWidth){
-                this.tiles = this.createPolymerTrazeTiles(message.tiles);
-                this.gridWidth = message.width;
-                this.gridHeight = message.height;
-
-                // to be removed
-                this.tiles[this.transformCoordinates([0, 0])].color = "green";  
-                this.tiles[this.transformCoordinates([this.gridWidth-1,this.gridHeight-1])].color = "red";
-                this.tiles[this.transformCoordinates([0,this.gridHeight-1])].color = "blue";
-                this.tiles[this.transformCoordinates([this.gridWidth -1, 0])].color = "yellow";
-            }
+            this.initGrid(message.height, message.width, message.tiles);
+            this.handleSpawns(message.spawns);
+            this.handleBikes(message.bikes);
         });
+    }
+
+    handleBikes(currentBikes){
+        if(!this.lastBikes){
+            this.lastBikes = {};
+        }
+        currentBikes.forEach(bike => this.handleBike(bike));
+    }
+
+    cleanUpOldBikes(currentBikes){
+        let oldBikes = Objekt.keysthis.gameMemory
+    }
+
+    handleBike(bike){
+        let gameMemoryKey = bike.playerId;
+        let completeTrail = bike.trail;
+        completeTrail.push(bike.currentLocation);
+        this.handleColoring(completeTrail, gameMemoryKey, "yellow");
+    }
+
+    handleSpawns(currentSpawns){
+        this.handleColoring(currentSpawns, "spawns", "white");
+    }
+
+    handleColoring(currentInfo, gameMemoryKey, color){
+        if(this.gameMemory[gameMemoryKey]){
+            this.setTilesToColor(this.gameMemory[gameMemoryKey], "#455A64");
+        }
+        let transformedInfo = null;
+        if(currentInfo && currentInfo.length > 0){
+            transformedInfo = this.transformArrayOfCoordinates(currentInfo);
+            this.setTilesToColor(transformedInfo, color);
+        }
+        this.gameMemory[gameMemoryKey] = transformedInfo;
+    }
+
+    setTilesToColor(tileIndex,color){
+        tileIndex.forEach((tile) =>{
+        //   this.tiles[tile].color = color;
+            this.set('tiles.'+tile, {color: color});
+        });  
+    }
+
+    initGrid(messageHeight, messageWidth, messageTiles){
+        if(messageHeight != this.gridHeight || messageWidth != this.gridWidth){
+            this.tiles = this.createPolymerTrazeTiles(messageTiles);
+            this.gridWidth = messageWidth;
+            this.gridHeight = messageHeight;
+
+            // // to be removed
+            // this.tiles[this.transformCoordinate([0, 0])].color = "green";  
+            // this.tiles[this.transformCoordinate([this.gridWidth-1,this.gridHeight-1])].color = "red";
+            // this.tiles[this.transformCoordinate([0,this.gridHeight-1])].color = "blue";
+            // this.tiles[this.transformCoordinate([this.gridWidth -1, 0])].color = "yellow";
+        }
     }
 
     createPolymerTrazeTiles(messageTiles){
@@ -102,7 +150,15 @@ class TrazeGameViewerElement extends PolymerElement {
         return tiles;
     }
 
-    transformCoordinates(coordinate){
+    transformArrayOfCoordinates(coordinates){
+        let transformed = [];
+        coordinates.forEach((coordinate) => {
+            transformed.push(this.transformCoordinate(coordinate));
+        });
+        return transformed;
+    }
+
+    transformCoordinate(coordinate){
         let x = coordinate[0];
         let y = coordinate[1];
         let newY = this.gridHeight - (y+1);

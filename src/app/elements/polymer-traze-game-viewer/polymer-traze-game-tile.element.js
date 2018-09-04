@@ -11,7 +11,11 @@ import {PolymerElement, html} from '@polymer/polymer/polymer-element.js';
 class PolymerTrazeGameTileElement extends PolymerElement {
     static get properties() {
         return {
-            tile:{}
+            tile:{
+                color: {
+                    type: String
+                }
+            }
         }
     }
 
@@ -24,7 +28,7 @@ class PolymerTrazeGameTileElement extends PolymerElement {
                     display: block;
                 }
             </style>
-            <div class="tile" style="background-color:{{tile.color}};"></div>
+            <div class="tile" style="background-color:[[tile.color]];"></div>
         `;
     }
 
