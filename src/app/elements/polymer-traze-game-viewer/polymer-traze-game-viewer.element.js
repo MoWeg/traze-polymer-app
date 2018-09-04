@@ -57,7 +57,10 @@ class TrazeGameViewerElement extends PolymerElement {
     constructor() {
         super();
         this.mqttService = new TrazeMqttService();
-        this.gameMemory = {};
+        this.gameState = {
+            tiles: {},
+            colors: {},
+        };
     }
 
     /**
@@ -76,6 +79,11 @@ class TrazeGameViewerElement extends PolymerElement {
     }
 
     spectateGame(instanceId){
+        this.mqttService.subscribeToMqtt('traze/'+instanceId+'/players', (message) =>{
+            message.forEach((player) => {
+                this.gameState.colors[player.id] = player.color;
+            });
+        });
         this.mqttService.subscribeToMqtt('traze/'+instanceId+'/grid', (message) => {
             this.initGrid(message.height, message.width, message.tiles);
             this.handleSpawns(message.spawns);
@@ -84,42 +92,46 @@ class TrazeGameViewerElement extends PolymerElement {
     }
 
     handleBikes(currentBikes){
-        if(!this.lastBikes){
-            this.lastBikes = {};
-        }
+        this.cleanUpBikes(currentBikes);
         currentBikes.forEach(bike => this.handleBike(bike));
     }
 
-    cleanUpOldBikes(currentBikes){
-        let oldBikes = Objekt.keysthis.gameMemory
+    cleanUpBikes(currentBikes){
+        let currentPlayers = currentBikes.map(bike => bike.playerId);
+        let bikesToCleanUp = Object.keys(this.gameState.tiles).filter(id => !currentPlayers.includes(id) && id != "spawns");
+        if(bikesToCleanUp){
+            bikesToCleanUp.forEach(bike => {
+                this.handleColoring(bike)
+            });
+        }
     }
 
     handleBike(bike){
         let gameMemoryKey = bike.playerId;
         let completeTrail = bike.trail;
         completeTrail.push(bike.currentLocation);
-        this.handleColoring(completeTrail, gameMemoryKey, "yellow");
+        let color = this.gameState.colors[gameMemoryKey] ? this.gameState.colors[gameMemoryKey] : "black";
+        this.handleColoring(gameMemoryKey, completeTrail, color);
     }
 
     handleSpawns(currentSpawns){
-        this.handleColoring(currentSpawns, "spawns", "white");
+        this.handleColoring("spawns", currentSpawns, "white");
     }
 
-    handleColoring(currentInfo, gameMemoryKey, color){
-        if(this.gameMemory[gameMemoryKey]){
-            this.setTilesToColor(this.gameMemory[gameMemoryKey], "#455A64");
+    handleColoring(gameMemoryKey, currentInfo, color){
+        if(this.gameState.tiles[gameMemoryKey]){
+            this.setTilesToColor(this.gameState.tiles[gameMemoryKey], "#455A64");
         }
         let transformedInfo = null;
         if(currentInfo && currentInfo.length > 0){
             transformedInfo = this.transformArrayOfCoordinates(currentInfo);
             this.setTilesToColor(transformedInfo, color);
         }
-        this.gameMemory[gameMemoryKey] = transformedInfo;
+        this.gameState.tiles[gameMemoryKey] = transformedInfo;
     }
 
     setTilesToColor(tileIndex,color){
         tileIndex.forEach((tile) =>{
-        //   this.tiles[tile].color = color;
             this.set('tiles.'+tile, {color: color});
         });  
     }
@@ -129,12 +141,6 @@ class TrazeGameViewerElement extends PolymerElement {
             this.tiles = this.createPolymerTrazeTiles(messageTiles);
             this.gridWidth = messageWidth;
             this.gridHeight = messageHeight;
-
-            // // to be removed
-            // this.tiles[this.transformCoordinate([0, 0])].color = "green";  
-            // this.tiles[this.transformCoordinate([this.gridWidth-1,this.gridHeight-1])].color = "red";
-            // this.tiles[this.transformCoordinate([0,this.gridHeight-1])].color = "blue";
-            // this.tiles[this.transformCoordinate([this.gridWidth -1, 0])].color = "yellow";
         }
     }
 
