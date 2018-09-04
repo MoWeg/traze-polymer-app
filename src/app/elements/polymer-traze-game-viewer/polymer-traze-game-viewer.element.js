@@ -34,14 +34,15 @@ class TrazeGameViewerElement extends PolymerElement {
             <style>
                 .container {
                     display: grid;
-                    min-height: 40em;
+                    height: 100vmin;
+                    width: 100vmin;
                 }
                 polymer-traze-game-tile {
                     display: block;
                     margin: 1px;
                 }
             </style>
-            <div class="container" style="grid-template-columns: repeat({{gridWidth}},1fr); grid-template-rows: repeat({{gridHeight}}, 1fr)">
+            <div class="container" style="grid-template-columns: repeat([[gridWidth]],1fr); grid-template-rows: repeat([[gridHeight]], 1fr)">
                 <template is="dom-repeat" items="[[tiles]]">
                     <polymer-traze-game-tile tile=[[item]]></polymer-traze-game-tile>
                 </template>
@@ -101,7 +102,7 @@ class TrazeGameViewerElement extends PolymerElement {
         let bikesToCleanUp = Object.keys(this.gameState.tiles).filter(id => !currentPlayers.includes(id) && id != "spawns");
         if(bikesToCleanUp){
             bikesToCleanUp.forEach(bike => {
-                this.handleColoring(bike)
+                this.handleColoring(bike);
             });
         }
     }
