@@ -32,15 +32,39 @@ export default class TrazePolymerApp extends PolymerElement {
         </style>
         <div class="container">
             <polymer-traze-game-viewer></polymer-traze-game-viewer>
-            <traze-instance-select></traze-instance-select>
-            <traze-join></traze-join>
+            <p> Instance: [[activeInstance]]</p>
+            <p> User: [[userName]]</p>
+            <traze-instance-select active-instance="{{activeInstance}}"></traze-instance-select>
+            <traze-join user-name="{{userName}}"></traze-join>
             <traze-steering-cross></traze-steering-cross>
         </div>
         `;
     }
 
     static get properties(){
-        return {}
+        return {
+            activeInstance:{
+                type: String,
+            },
+            userName: {
+                type: String,
+            }
+        }
+    }
+
+    /**
+      * Array of strings describing multi-property observer methods and their
+      * dependant properties
+      */
+    static get observers() {
+        return [
+            'onChanges(activeInstance, userName)'
+        ];
+    }
+
+    onChanges(inst, usr){
+        console.log("onChanges fired");
+        
     }
 
     constructor() {

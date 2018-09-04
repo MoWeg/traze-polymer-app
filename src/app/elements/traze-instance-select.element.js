@@ -17,7 +17,10 @@ class  TrazeInstanceSelectElement extends PolymerElement {
             instances : {
                 type: Array
             },
-            activeInstance: {}
+            activeInstance: {
+                type: String,
+                notify: true
+            },
         }
     }
 
@@ -26,7 +29,7 @@ class  TrazeInstanceSelectElement extends PolymerElement {
         <template is="dom-if" if="[[showSelect]]">
             <div>
                 <div>Pick an instance</div>
-                <paper-radio-group selected="{{selectedInstance}}">
+                <paper-radio-group selected="{{activeInstance}}">
                     <template is="dom-repeat" items="{{instances}}">
                      <paper-radio-button name="[[item.name]]">Instance: [[item.name]] (Players: [[item.activePlayers]])</paper-radio-button>
                     </template>
@@ -57,7 +60,7 @@ class  TrazeInstanceSelectElement extends PolymerElement {
         this.mqttService.subscribeToMqtt('traze/games', (message) => {
             this.instances = message;
             if(message.length == 1){
-                this.activeInstance = message[0];
+                this.activeInstance = message[0].name;
                 this.selectInstance();
             } else {
                 this.showSelect = true;
@@ -66,7 +69,9 @@ class  TrazeInstanceSelectElement extends PolymerElement {
     }
 
     selectInstance(){
-        this.mqttService.selectInstance(this.activeInstance.name);
+        this.set('activeInstance', this.activeInstance);
+        this.notifyPath('activeInstance');
+        this.mqttService.selectInstance(this.activeInstance);
         this.mqttService.unsubscribeFromMqtt('traze/games');
     }
 }

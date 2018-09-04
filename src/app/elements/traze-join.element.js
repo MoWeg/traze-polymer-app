@@ -12,11 +12,11 @@ class TrazeJoinElement extends PolymerElement {
     static get properties() {
         return {
             userName : {
-                type: String
-            },
-            setName: {
                 type: String,
                 notify: true
+            },
+            inputValue: {
+                type: String
             }
         }
     }
@@ -31,7 +31,7 @@ class TrazeJoinElement extends PolymerElement {
         <paper-card heading="Login">
             <div class="card-content"> 
                 <div>Set your name</div>
-                <paper-input value={{userName::input}}><paper-input>
+                <paper-input value={{inputValue::input}}><paper-input>
             </div>
             <div class="card-actions">
                 <div class="horizontal justified">
@@ -60,7 +60,8 @@ class TrazeJoinElement extends PolymerElement {
     }
 
     joinInstance(){
-        this.set('setName', this.userName);
+        this.set('userName', this.inputValue);
+        this.notifyPath('userName');
     }
 }
 
