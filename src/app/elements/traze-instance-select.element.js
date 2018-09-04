@@ -17,7 +17,7 @@ class  TrazeInstanceSelectElement extends PolymerElement {
             instances : {
                 type: Array
             },
-            selectedInstance: {}
+            activeInstance: {}
         }
     }
 
@@ -57,7 +57,7 @@ class  TrazeInstanceSelectElement extends PolymerElement {
         this.mqttService.subscribeToMqtt('traze/games', (message) => {
             this.instances = message;
             if(message.length == 1){
-                this.selectedInstance = message[0];
+                this.activeInstance = message[0];
                 this.selectInstance();
             } else {
                 this.showSelect = true;
@@ -66,8 +66,8 @@ class  TrazeInstanceSelectElement extends PolymerElement {
     }
 
     selectInstance(){
-       this.mqttService.selectInstance(this.selectedInstance.name);
-       this.mqttService.unsubscribeFromMqtt('traze/games');
+        this.mqttService.selectInstance(this.activeInstance.name);
+        this.mqttService.unsubscribeFromMqtt('traze/games');
     }
 }
 

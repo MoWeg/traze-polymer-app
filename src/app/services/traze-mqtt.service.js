@@ -30,11 +30,16 @@ export class TrazeMqttService{
             Object.keys(this.subscribers).forEach(topic => {
                 this.client.subscribe(topic);
             })
-            onSucess();
+            if(onSucess){
+                onSucess();
+            }
+            
         });
         this.client.on('error', (error) => {
             console.log("Error: " + error);
-            onError();
+            if(onError){
+                onError();
+            }            
         });
         this.client.on('message', (topic, message) => {
             message = JSON.parse(message);

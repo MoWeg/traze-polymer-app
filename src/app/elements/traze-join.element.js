@@ -13,6 +13,10 @@ class TrazeJoinElement extends PolymerElement {
         return {
             userName : {
                 type: String
+            },
+            setName: {
+                type: String,
+                notify: true
             }
         }
     }
@@ -53,6 +57,10 @@ class TrazeJoinElement extends PolymerElement {
      */
     ready() {
         super.ready();
+    }
+
+    joinInstance(){
+        this.set('setName', this.userName);
     }
 }
 

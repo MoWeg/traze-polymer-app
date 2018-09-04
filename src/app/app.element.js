@@ -25,39 +25,33 @@ export default class TrazePolymerApp extends PolymerElement {
             polymer-traze-game-viewer {
                 display: block;
             }
+            .container{
+                display: flex;
+                flex-wrap: wrap;
+            }
         </style>
-        <traze-instance-select></traze-instance-select>
-        <polymer-traze-game-viewer></polymer-traze-game-viewer>
-        
-        <traze-join></traze-join>
-        
+        <div class="container">
+            <polymer-traze-game-viewer></polymer-traze-game-viewer>
+            <traze-instance-select></traze-instance-select>
+            <traze-join></traze-join>
+            <traze-steering-cross></traze-steering-cross>
+        </div>
         `;
     }
 
     static get properties(){
-        return {
-            mqttStatus: {
-                type: Boolean
-            }
-        }
-    }
-
-    computeStatus(mqttStatus){
-        return mqttStatus? 'connected' : 'not-connected';
+        return {}
     }
 
     constructor() {
         super();
         this.mqttService = new TrazeMqttService();
-        this.mqttStatus = this.mqttService.isConnected;
     } 
 
     ready() {
         super.ready();
-        if(!this.mqttStatus){
-            this.mqttService.connectToServer(SERVER_URL,() => {
-                this.mqttStatus = true;
-            });
+        if(!this.mqttService.isConnected){
+            this.mqttService.connectToServer(SERVER_URL);
         }             
     }
 }
