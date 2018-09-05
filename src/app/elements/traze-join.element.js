@@ -1,4 +1,5 @@
 import {PolymerElement, html} from '@polymer/polymer/polymer-element.js';
+import { TrazeMqttService } from '../services/traze-mqtt.service';
 
 /**
  * `LowerCaseDashedName` Description
@@ -14,11 +15,11 @@ class TrazeJoinElement extends PolymerElement {
             activeInstance:{
                 type: String
             },
-            userName : {
-                type: String,
+            playerId : {
+                type: Number,
                 notify: true
             },
-            inputValue: {
+            userName: {
                 type: String
             }
         }
@@ -34,7 +35,7 @@ class TrazeJoinElement extends PolymerElement {
         <paper-card heading="Login">
             <div class="card-content"> 
                 <div>Set your name</div>
-                <paper-input value={{inputValue::input}}><paper-input>
+                <paper-input value={{userName::input}}><paper-input>
             </div>
             <div class="card-actions">
                 <div class="horizontal justified">
@@ -63,7 +64,10 @@ class TrazeJoinElement extends PolymerElement {
     }
 
     joinInstance(){
-        this.set('userName', this.inputValue); // same as this.userName = this.inputValue
+        let mqttService = new TrazeMqttService();
+        mqttService.joinGame(this.userName,(message) => {
+            this.set('playerId', message.playerId); // same as this.playerId = ...
+        });       
     }
 }
 

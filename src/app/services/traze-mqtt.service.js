@@ -70,6 +70,19 @@ export class TrazeMqttService{
         this.client.unsubscribe(topic);
     }
 
+    joinGame(userName, onSuccess){
+        this.subscribeToMqtt('traze/' + this.activeInstance + '/player/' + this.clientId, (message) => {
+            this.playerId = message.id;
+            this.secretToken = message.secretUserToken;
+            onSuccess({playerId: this.playerId});
+        });
+        let message = {
+            name: userName,
+            mqttClientName: this.clientId
+        }
+        this.client.publish('traze/' + this.activeInstance + "/join", JSON.stringify(message));
+    }
+
     selectInstance(trazeInstanceId){
         this.activeInstance = trazeInstanceId;
     }

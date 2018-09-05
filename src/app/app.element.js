@@ -34,7 +34,7 @@ export default class TrazePolymerApp extends PolymerElement {
             <polymer-traze-game-viewer active-instance=[[activeInstance]]></polymer-traze-game-viewer>
             <iron-pages selected="[[needed]]">
                 <traze-instance-select active-instance="{{activeInstance}}"></traze-instance-select>
-                <traze-join active-instance=[[activeInstance]] user-name="{{userName}}"></traze-join>
+                <traze-join active-instance=[[activeInstance]] player-id="{{playerId}}"></traze-join>
                 <traze-steering-cross></traze-steering-cross>
             </iron-pages>
         </div>
@@ -46,8 +46,8 @@ export default class TrazePolymerApp extends PolymerElement {
             activeInstance:{
                 type: String,
             },
-            userName: {
-                type: String,
+            playerId: {
+                type: Number,
             },
             needed: {
                 type: Number,
@@ -61,7 +61,7 @@ export default class TrazePolymerApp extends PolymerElement {
       */
     static get observers() {
         return [
-            'onChanges(activeInstance, userName)'
+            'onChanges(activeInstance, playerId)'
         ];
     }
 
@@ -70,7 +70,7 @@ export default class TrazePolymerApp extends PolymerElement {
             this.needed = 0;
             return;
         }
-        if(!this.userName){
+        if(!this.playerId){
             this.needed = 1;
             return;
         }
