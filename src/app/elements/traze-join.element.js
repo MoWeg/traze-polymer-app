@@ -1,6 +1,9 @@
 import {PolymerElement, html} from '@polymer/polymer/polymer-element.js';
 import { TrazeMqttService } from '../services/traze-mqtt.service';
 
+import '@polymer/paper-button/paper-button.js';
+import '@polymer/paper-card/paper-card.js';
+import '@polymer/paper-input/paper-input.js';
 /**
  * `LowerCaseDashedName` Description
  *

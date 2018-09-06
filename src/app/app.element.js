@@ -4,6 +4,7 @@ import '@polymer/iron-pages/iron-pages.js'
 
 import './elements/traze-instance-select.element.js';
 import './elements/traze-join.element.js';
+import './elements/traze-steering.element.js'
 import './elements/polymer-traze-game-viewer/polymer-traze-game-viewer.element.js'
 
 import {TrazeMqttService} from './services/traze-mqtt.service'
@@ -35,7 +36,7 @@ export default class TrazePolymerApp extends PolymerElement {
             <iron-pages selected="[[needed]]">
                 <traze-instance-select active-instance="{{activeInstance}}"></traze-instance-select>
                 <traze-join active-instance=[[activeInstance]] player-id="{{playerId}}"></traze-join>
-                <traze-steering-cross></traze-steering-cross>
+                <traze-steering player-id="{{playerId}}"></traze-steering>
             </iron-pages>
         </div>
         `;

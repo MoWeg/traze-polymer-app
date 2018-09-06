@@ -83,6 +83,29 @@ export class TrazeMqttService{
         this.client.publish('traze/' + this.activeInstance + "/join", JSON.stringify(message));
     }
 
+    steer(direction){
+        if(this.secretToken && this.playerId){
+            let message = {
+                course: direction,
+                playerToken: this.secretToken
+            }
+        
+            this.client.publish('traze/'+instance+ '/' + this.playerId + '/steer', JSON.stringify(message));
+        }
+    }
+
+    bail(){
+        if(this.secretToken && this.playerId){
+            let message = {
+                playerToken: this.secretToken
+            };       
+            this.client.publish('traze/'+instance+ '/' + this.playerId + '/bail', JSON.stringify(message));
+            this.playerToken = null;
+            this.playerId = null;
+        }
+    }
+
+
     selectInstance(trazeInstanceId){
         this.activeInstance = trazeInstanceId;
     }
