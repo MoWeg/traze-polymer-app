@@ -2,7 +2,7 @@ import {PolymerElement, html} from '@polymer/polymer';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/iron-pages/iron-pages.js'
 
-import './elements/traze-instance-select.element.js';
+import './elements/traze-select.element.js';
 import './elements/traze-join.element.js';
 import './elements/traze-steering.element.js'
 import './elements/polymer-traze-game-viewer/polymer-traze-game-viewer.element.js'
@@ -32,11 +32,11 @@ export default class TrazePolymerApp extends PolymerElement {
             }
         </style>
         <div class="container">
-            <polymer-traze-game-viewer active-instance=[[activeInstance]]></polymer-traze-game-viewer>
+            <polymer-traze-game-viewer active-instance=[[activeInstance]]  player-name="[[playerName]]"></polymer-traze-game-viewer>
             <iron-pages selected="[[needed]]">
                 <traze-instance-select active-instance="{{activeInstance}}"></traze-instance-select>
-                <traze-join active-instance=[[activeInstance]] player-id="{{playerId}}"></traze-join>
-                <traze-steering player-id="{{playerId}}"></traze-steering>
+                <traze-join active-instance=[[activeInstance]]" player-name="{{playerName}}"></traze-join>
+                <traze-steering player-name="{{playerName}}"></traze-steering>
             </iron-pages>
         </div>
         `;
@@ -47,8 +47,8 @@ export default class TrazePolymerApp extends PolymerElement {
             activeInstance:{
                 type: String,
             },
-            playerId: {
-                type: Number,
+            playerName: {
+                type: String,
             },
             needed: {
                 type: Number,
@@ -62,7 +62,7 @@ export default class TrazePolymerApp extends PolymerElement {
       */
     static get observers() {
         return [
-            'onChanges(activeInstance, playerId)'
+            'onChanges(activeInstance, playerName)'
         ];
     }
 

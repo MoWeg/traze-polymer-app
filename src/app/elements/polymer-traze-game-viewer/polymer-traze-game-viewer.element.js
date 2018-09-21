@@ -29,6 +29,10 @@ class TrazeGameViewerElement extends PolymerElement {
             gridHeight: {
                 type: Number,
                 value: 0
+            },
+            playerName: {
+                type: String,
+                observer: 'joinPlayer'
             }
         }
     }
@@ -76,6 +80,10 @@ class TrazeGameViewerElement extends PolymerElement {
         super.ready();
     }
 
+    joinPlayer(){
+        
+    }
+
     onInstanceSelect(){
         this.spectateGame(this.activeInstance);
     }
@@ -112,6 +120,8 @@ class TrazeGameViewerElement extends PolymerElement {
         let gameMemoryKey = bike.playerId;
         let completeTrail = bike.trail;
         completeTrail.push(bike.currentLocation);
+        console.log(bike.playerId, completeTrail);
+        
         let color = this.gameState.colors[gameMemoryKey] ? this.gameState.colors[gameMemoryKey] : "black";
         this.handleColoring(gameMemoryKey, completeTrail, color);
     }

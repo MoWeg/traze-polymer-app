@@ -17,8 +17,8 @@ import { idlePeriod } from '@polymer/polymer/lib/utils/async';
 class TrazeSteeringElement extends PolymerElement {
     static get properties() {
         return {
-            playerId: {
-                type: Number,
+            playerName: {
+                type: String,
                 notify: true
             }
         }
@@ -72,7 +72,7 @@ class TrazeSteeringElement extends PolymerElement {
 
     bail(){
         this.mqttService.bail();
-        this.playerId = null;
+        this.playerName = null;
     }
 }
 

@@ -18,8 +18,8 @@ class TrazeJoinElement extends PolymerElement {
             activeInstance:{
                 type: String
             },
-            playerId : {
-                type: Number,
+            playerName : {
+                type: String,
                 notify: true
             },
             userName: {
@@ -67,7 +67,7 @@ class TrazeJoinElement extends PolymerElement {
     }
 
     joinInstance(){
-        let mqttService = new TrazeMqttService();
+        this.set("playerName", userName);
         mqttService.joinGame(this.userName,(message) => {
             this.set('playerId', message.playerId); // same as this.playerId = ...
         });       
